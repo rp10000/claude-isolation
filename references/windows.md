@@ -2,6 +2,8 @@
 
 适用 Windows 10/11、PowerShell 5.1+。Windows 原生安装、MSIX、WSL、虚拟机是不同网络边界；不要把 Windows 进程规则套到 WSL 中的 Linux 进程。本发布包没有在所有这些组合上实机验收。
 
+标准部署还要求按 [TUN 与时区流程](tun-timezone.md) 开启规则 TUN，并将系统时区设为 `Singapore Standard Time`。执行前备份、说明系统级影响和核对授权；开启 TUN 不替代下文出站保护。
+
 ## 1. 只读盘点和备份
 
 先查目标进程的 ExecutablePath、父子关系、签名；`Get-AuthenticodeSignature` 核对签名状态及发行者。确定 Claude 是独立 EXE、MSIX 还是由共享 Node 启动。查看代理端口所属 PID、v2rayN 当前 core 和实际路由配置。不要输出整份订阅/数据库。

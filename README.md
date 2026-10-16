@@ -4,6 +4,8 @@
 
 **目标：指定线路不可用时，让受保护的客户端请求失败，避免自动直连或切换出口。** 这是联网隐私控制，不承诺防封号、隐藏身份或获得服务的地区使用资格。
 
+**v1.1.0 标准部署新增要求：开启并验证规则 TUN，系统时区设为新加坡（Asia/Singapore，UTC+8；Windows ID：Singapore Standard Time）。** 变更前备份和说明系统级影响；缺少授权/权限或当前环境不支持时标记未完成。TUN 仍需配合断线阻断；时区不会改变出口 IP，也不保证账号安全。详细步骤、验证和恢复见 [TUN 与时区](references/tun-timezone.md)。
+
 ## 安装与使用
 
 把 ZIP 中的 `claude-isolation` 文件夹放入 AI 工具的 Skill 目录：
@@ -14,7 +16,7 @@
 
 重新加载 Skills／开启新会话，使工具发现它。Codex 中可以这样请求：
 
-> 使用 $claude-isolation。先检查我的系统、代理端口、实际节点和 Claude 各客户端联网路径。我要官方网页登录、桌面端和 Claude Code 固定走我指定的节点；节点失效、代理退出都不允许直连。第三方 API 配置不动，国内软件保持原有直连。先说明覆盖范围和回滚，再实施并验证。
+> 使用 $claude-isolation。先检查我的系统、代理端口、实际节点和 Claude 各客户端联网路径。开启规则 TUN，把系统时区改为新加坡。我要官方网页登录、桌面端和 Claude Code 固定走我指定的节点；节点失效、代理退出都不允许直连。第三方 API 配置不动，国内软件保持原有直连。先说明覆盖范围、系统级影响和回滚，再实施并验证。
 
 Claude Code 可使用 `/claude-isolation`，或直接点名这个 Skill。是否能自动执行取决于工具权限和平台。系统权限、网络过滤扩展、描述文件安装等仍需使用者确认；不会绕过确认。
 
@@ -22,6 +24,7 @@ Claude Code 可使用 `/claude-isolation`，或直接点名这个 Skill。是否
 
 | 范围 | 处理方式 | 不能省略的检查 |
 |---|---|---|
+| 标准部署前置 | 开启规则 TUN；Windows/macOS 系统时区改为新加坡 | 实际 TUN 路由、国内/API/LAN 对照，系统及浏览器时区、自动时区与恢复 |
 | Chrome 官方网站 | 精确/子域 PAC，无直连回退；强制策略；按站点限制 WebRTC | 有效策略、版本支持、真实浏览器故障测试 |
 | Windows 官方桌面端／独立 CLI | 专用代理设置 + 指定 EXE 出站保护脚本 | 防火墙有效、子进程、MSIX/升级路径、实际连接 |
 | macOS 桌面端／CLI | 专用代理 + LuLu 官方规则流程 | 扩展授权、根身份与 helper、旧 allow 冲突 |
@@ -41,14 +44,14 @@ Python 3.10+，无第三方 Python 依赖。实际执行 PAC 用例还需要 Nod
 python scripts/generate.py --config assets/example-config.json --out ./generated-example
 python -B -m unittest discover -s tests -v
 # 发布 ZIP，输出目录必须存在，ZIP 和校验文件必须尚不存在：
-python scripts/make_release.py --out /path/outside-skill/claude-isolation-v1.0.0.zip
+python scripts/make_release.py --out /path/outside-skill/claude-isolation-v1.1.0.zip
 ```
 
 `generated-example` 必须不存在。例子的 loopback 端口只是示例，真实配置要先发现端口。生成结果没有生效；代理执行流程见 SKILL.md 及 references。不要把自己的生成结果放进公开仓库。
 
 ## 验证状态与边界
 
-v1.0.0 的公开生成器经过离线测试：域名边界、PAC 实际执行、策略/描述文件一致性、坏参数拒绝、源范围与防覆盖。Windows 出站脚本经过语法和模拟系统接口测试，**未在每个 Windows 版本、MSIX、WSL 或第三方安全软件组合实机验收**。macOS 与爱快流程来自实机部署经验，但新使用者仍须在自己的机器完成验证。
+v1.1.0 的公开生成器经过离线测试：域名边界、PAC 实际执行、策略/描述文件一致性、TUN/新加坡时区要求及未验证状态、坏参数拒绝、源范围与防覆盖。Windows 出站脚本经过语法和模拟系统接口测试，**未在每个 Windows 版本、MSIX、WSL 或第三方安全软件组合实机验收**。TUN 与时区操作本次发布只检查流程和离线输出，没有修改测试机系统设置；新使用者须验证自己的实际环境。macOS 与爱快原有流程来自实机部署经验，仍须逐机完成验证。
 
 每次部署独立报告“生成、应用、有效策略、真实路径、节点故障、代理退出”状态。策略存在、一次 HTTP 请求成功、IP 检测网页显示某国家，都不能代替各客户端验收。浏览器 PAC 不覆盖系统 DNS 和所有 UDP；禁用非代理 WebRTC UDP 可能让候选为空，不保证出现某个国家的 UDP 地址。
 

@@ -10,7 +10,7 @@ FILES = (
     "assets/example-config.json", "scripts/generate.py", "scripts/windows-guard.ps1",
     "scripts/make_release.py", "references/generator.md", "references/windows.md",
     "references/macos.md", "references/proxy-clients.md", "references/ikuai.md",
-    "references/verification.md", "tests/test_generate.py", "tests/test_windows.py",
+    "references/verification.md", "references/tun-timezone.md", "tests/test_generate.py", "tests/test_windows.py",
     "tests/test_windows_mock.ps1", "tests/test_release.py", "THIRD-PARTY-NOTICES.md",
     "assets/public_suffix_list.dat", "assets/MPL-2.0.txt",
 )

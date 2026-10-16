@@ -13,10 +13,10 @@
 python scripts/generate.py --config /path/to/private-config.json --out /path/to/new-output
 ```
 
-输出：PAC、Chrome 策略 JSON、可移除的 macOS 用户描述文件、域名表、状态和哈希清单；有源 IP 时另有爱快 V4 请求**计划**。输出目录必须不存在，父目录必须存在，不覆盖旧备份。生成失败的目录需人工检查后处理，不能当完成结果。
+输出：PAC、Chrome 策略 JSON、可移除的 macOS 用户描述文件、域名表、`setup-requirements.json`（规则 TUN 与新加坡系统/浏览器时区的待执行要求）、状态和哈希清单；有源 IP 时另有爱快 V4 请求**计划**。输出目录必须不存在，父目录必须存在，不覆盖旧备份。生成失败的目录需人工检查后处理，不能当完成结果。
 
 JSON 是策略数据，不是 Chrome 界面可直接导入的设置文件。macOS 走描述文件；Windows 按平台参考部署。不要把 JSON 复制进 Preferences，或用推荐级策略冒充强制级策略。`chrome://policy` 是有效性检查入口。
 
 PAC 的本地域名和私有 IPv4/Tailscale 地址保留直连；受保护域名先匹配。IPv6 本地特例仅含 `::1`，不要把其他 IPv6 自动加为旁路。完整 IPv6、DNS、QUIC 需要平台和实测补足。
 
-脚本不安装软件、不配置节点、不生成凭据、不自动把本地端口绑定某个远端出口，也不声称生成即隔离成功。
+脚本不安装软件、不配置节点、不生成凭据、不自动把本地端口绑定某个远端出口，也不会开启 TUN 或修改时区。`setup-requirements.json` 中 required=true 是部署目标，verified=false 保留待验证状态；代理需按 tun-timezone.md 在获得设置授权后实施。不得声称生成即隔离成功。

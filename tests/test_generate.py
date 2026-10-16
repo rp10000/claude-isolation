@@ -26,6 +26,23 @@ class GeneratorTests(unittest.TestCase):
         self.assertEqual(manifest["status"], "generated_not_applied")
         self.assertNotIn("ikuai-v4-plan.json", output)
 
+    def test_tun_and_singapore_requirements_are_pending(self):
+        output = generator.build(self.config())
+        requirements = json.loads(output["setup-requirements.json"])
+        self.assertEqual(requirements["status"], "required_not_applied_or_verified")
+        self.assertEqual(requirements["tun"], {"required": True, "routing_mode": "rule_based",
+                                               "keep_process_guard": True, "verified": False})
+        self.assertEqual(requirements["system_timezone"], {
+            "required": True, "iana_id": "Asia/Singapore", "windows_id": "Singapore Standard Time",
+            "utc_offset": "+08:00", "verified": False})
+        self.assertEqual(requirements["browser_timezone"], {
+            "expected_iana_id": "Asia/Singapore", "verified": False})
+        manifest = json.loads(output["manifest.json"])
+        self.assertEqual(manifest["version"], "1.1.0")
+        self.assertIn("setup-requirements.json", manifest["sha256"])
+        self.assertIn("enable and verify rule-based TUN", manifest["pending"])
+        self.assertIn("set and verify Singapore system timezone", manifest["pending"])
+
     def test_artifacts_agree(self):
         output = generator.build(self.config())
         policy = json.loads(output["chrome-policy.json"])

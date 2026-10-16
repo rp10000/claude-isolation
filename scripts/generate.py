@@ -168,6 +168,16 @@ def build(config):
         "chrome-policy.json": dump(policy),
         "chrome.mobileconfig": make_profile(policy, identifier),
         "protected-domains.txt": ("\n".join(domains) + "\n").encode(),
+        "setup-requirements.json": dump({
+            "status": "required_not_applied_or_verified",
+            "tun": {"required": True, "routing_mode": "rule_based",
+                    "keep_process_guard": True, "verified": False},
+            "system_timezone": {"required": True, "iana_id": "Asia/Singapore",
+                                "windows_id": "Singapore Standard Time",
+                                "utc_offset": "+08:00", "verified": False},
+            "browser_timezone": {"expected_iana_id": "Asia/Singapore", "verified": False},
+            "reference": "references/tun-timezone.md",
+        }),
     }
     if sources:
         files["ikuai-v4-plan.json"] = dump({
@@ -182,11 +192,13 @@ def build(config):
             "limits": ["IPv4 domain guard only", "Not an OAuth/API classifier",
                        "Not a full kill switch", "Verify live firmware schema before use"]})
     files["manifest.json"] = dump({
-        "version": "1.0.0", "status": "generated_not_applied",
+        "version": "1.1.0", "status": "generated_not_applied",
         "proxy": {"host": host, "port": port}, "unprotected": mode,
         "domains": domains, "profile_identifier": identifier,
         "sha256": {name: hashlib.sha256(data).hexdigest() for name, data in files.items()},
-        "pending": ["backup", "policy application", "fixed node routing",
+        "pending": ["backup", "enable and verify rule-based TUN",
+                    "set and verify Singapore system timezone", "verify browser timezone",
+                    "policy application", "fixed node routing",
                     "native process guard", "normal egress test", "node failure test",
                     "proxy exit test", "IPv6/UDP/DNS coverage review"],
     })

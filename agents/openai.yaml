@@ -1,0 +1,4 @@
+interface:
+  display_name: "Claude Isolation"
+  short_description: "为 Windows 和 Mac 配置 Claude 固定代理与断线隔离"
+  default_prompt: "使用 $claude-isolation 检查我的联网路径，保留第三方 API 设置，为官方 Claude 配置固定代理和断线保护，并提供验证与回滚。"

@@ -1,0 +1,9 @@
+{
+  "proxy_host": "127.0.0.1",
+  "proxy_port": 10808,
+  "providers": ["claude"],
+  "extra_domains": [],
+  "unprotected": "direct",
+  "profile_identifier": "local.claude-isolation.chrome",
+  "router_sources": []
+}
